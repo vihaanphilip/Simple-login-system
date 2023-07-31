@@ -9,23 +9,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Serve app.js
-app.get('/app.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'app.js'));
-});
+// // Serve app.js
+// app.get('/app.js', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'app.js'));
+// });
 
-// Serve other HTML pages from the "other-pages" directory
-app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'other-pages', 'about.html'));
-});
+// // Serve other HTML pages from the "other-pages" directory
+// app.get('/about', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'other-pages', 'about.html'));
+// });
 
-// Handle the redirect to the about page
-app.get('/redirect', (req, res) => {
-  res.redirect('/about');
-});
+// // Handle the redirect to the about page
+// app.get('/redirect', (req, res) => {
+//   res.redirect('/about');
+// });
 
 // Start the server
 app.listen(port, () => {
