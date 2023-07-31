@@ -23,9 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => {
             if (response.ok) {
                 console.log('Login successful!');
+                window.location.href = `login_success.html`;
             } else {
                 console.log('Login failed!');
             }
         })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     });
 });
