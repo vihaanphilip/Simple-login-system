@@ -299,3 +299,18 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+# Ignore node_modules directory (where npm packages are installed)
+node_modules/
+
+# Ignore npm debugging log files
+npm-debug.log*
+
+# Ignore yarn.lock (if using Yarn package manager)
+yarn.lock
+
+# Ignore package-lock.json (if using npm v5+)
+package-lock.json
+
+# Ignore node_modules in nested directories
+**/node_modules/

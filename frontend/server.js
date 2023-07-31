@@ -1,39 +1,33 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
 const path = require('path');
 
+const app = express();
 const port = 3000; // Change this to the desired port number
 
-http.createServer((req, res) => {
-  if (req.url === '/') {
-    // Serve index.html
-    const filePath = path.join(__dirname, 'index.html');
-    fs.readFile(filePath, (err, content) => {
-      if (err) {
-        res.writeHead(500);
-        res.end('Error loading index.html');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(content);
-      }
-    });
-  } else if (req.url === '/app.js') {
-    // Serve app.js
-    const filePath = path.join(__dirname, 'app.js');
-    fs.readFile(filePath, (err, content) => {
-      if (err) {
-        res.writeHead(500);
-        res.end('Error loading app.js');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/javascript' });
-        res.end(content);
-      }
-    });
-  } else {
-    // Handle other requests (if needed)
-    res.writeHead(404);
-    res.end('Page not found');
-  }
-}).listen(port, () => {
-  console.log(`Server running http://localhost:${port}/`);
+// Serve static files (CSS, images, etc.) from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve app.js
+app.get('/app.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'app.js'));
+});
+
+// Serve other HTML pages from the "other-pages" directory
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'other-pages', 'about.html'));
+});
+
+// Handle the redirect to the about page
+app.get('/redirect', (req, res) => {
+  res.redirect('/about');
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}/`);
 });
