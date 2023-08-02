@@ -1,0 +1,12 @@
+2/8/23
+-------
+
+Not complete
+-
+
+- Redirect to success page (index.html) when successfully logged in
+
+Completed
+- redirect page to login page if its not through sign in
+
+

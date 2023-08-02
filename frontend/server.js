@@ -5,29 +5,39 @@ const app = express();
 const port = 3000; // Change this to the desired port number
 
 // Serve static files (CSS, images, etc.) from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false
+}));
 
-// Serve index.html
-app.get('/', (req, res) => {
+// Serve login
+app.get('/login', (req, res) => {
+  // console.log('Redirecting to /login')
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Serve success
+app.get('/success', (req, res) => {
+  // console.log('Redirecting to /login')
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// // Serve app.js
-// app.get('/app.js', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'app.js'));
-// });
-
-// // Serve other HTML pages from the "other-pages" directory
-// app.get('/about', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'other-pages', 'about.html'));
-// });
-
-// // Handle the redirect to the about page
-// app.get('/redirect', (req, res) => {
-//   res.redirect('/about');
-// });
+app.get('/', (req, res) => {
+  console.log('Redirecting to /login');
+  res.redirect('/login');
+});
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
+
+
+
+
+
+
+
+
+
+
+

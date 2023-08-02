@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8000";
+const baseUrl = "http://localhost:8000/";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(inputUsername);
         console.log(inputPassword);
 
-        fetch(baseUrl + '/login', {
+        fetch(baseUrl + 'login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => {
             if (response.ok) {
                 console.log('Login successful!');
-                window.location.href = `login_success.html`;
+                window.location.href = `/success`;
             } else {
                 console.log('Login failed!');
             }
