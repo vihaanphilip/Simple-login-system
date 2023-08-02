@@ -2,11 +2,16 @@
 -------
 
 Not complete
--
+- Mask password so that no one can see when typing in the field
+- Error handling for wrong password/username
 
-- Redirect to success page (index.html) when successfully logged in
+- Create a token and store it in localstorage whenever login successful
+- Every time main page loaded, check whether there is token
+    - if there is redirect to success with proper user
+    - if no, redirect to login page
+
 
 Completed
 - redirect page to login page if its not through sign in
-
+- Redirect to success page (index.html) when successfully logged in
 
