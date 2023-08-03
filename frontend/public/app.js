@@ -20,16 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 password: inputPassword
             })
         })
-        .then(response => {
-            if (response.ok) {
-                console.log('Login successful!');
-                window.location.href = `/success`;
-            } else {
-                console.log('Login failed!');
-            }
-        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })  
         .catch(error => {
             console.error('Error:', error);
         });
     });
 });
+
+// function handleLoginResponse(userDetails)

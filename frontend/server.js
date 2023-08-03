@@ -4,6 +4,9 @@ const path = require('path');
 const app = express();
 const port = 3000; // Change this to the desired port number
 
+// Middleware to parse incoming JSON payloads
+app.use(express.json());
+
 // Serve static files (CSS, images, etc.) from the "public" directory
 app.use(express.static(path.join(__dirname, 'public'), {
   index: false

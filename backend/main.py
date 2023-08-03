@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import models
 from database import engine, SessionLocal
@@ -55,17 +56,18 @@ def create_user(user: User, db: Session = Depends(get_db)):
 def check_credentials(user: User, db: Session = Depends(get_db)):
     user_model = db.query(models.User).filter(models.User.username == user.username).first()
     if user_model is None:
-        return False
+        return JSONResponse(content = {"error": "Invalid username"}, status_code=404)
     if user_model.password != user.password:
-        return False
-    return True
+        return JSONResponse(content={"error": "Password mismatch"}, status_code=404)
+    return JSONResponse(content = {"username": user_model.username, "password": user_model.password})
 
 @app.post("/login")
 def login(user: User, db: Session = Depends(get_db)):
-    if check_credentials(user, db):
-        return {"message": "Login successful"}
+    response =  check_credentials(user, db)
+    if response.status_code == 200:
+        return response
     else:
-        raise HTTPException(status_code=401, detail="Login unsuccessful")
+        raise HTTPException(status_code=response.status_code, detail="Invalid credentials")
 
 
 
