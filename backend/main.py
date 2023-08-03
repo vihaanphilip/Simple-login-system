@@ -1,10 +1,18 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
+
+#jwt
+import jwt
+import time
+from typing import Dict
+
+JWT_SECRET = 'myjwtsecret'
+JWT_ALGORITHM = 'HS256'
 
 #to run type:
 #uvicorn main:app --reload
@@ -53,22 +61,68 @@ def create_user(user: User, db: Session = Depends(get_db)):
 
     return user
 
+# Post login
+@app.post("/login")
+def login(user: User, db: Session = Depends(get_db)):
+    if check_credentials(user, db):
+        return signJWT(user.username)
+    else:
+        raise HTTPException(status_code=404, detail="Invalid credentials")
+
+# Post verify
+@app.post("/verify")
+def login(jwtoken: str):
+    if verify_jwt(jwtoken):
+        return {"message": "Valid"}
+    else:
+        return {"message": "Invalid"}
+
+
+
 def check_credentials(user: User, db: Session = Depends(get_db)):
     user_model = db.query(models.User).filter(models.User.username == user.username).first()
     if user_model is None:
-        return JSONResponse(content = {"error": "Invalid username"}, status_code=404)
+        return False
     if user_model.password != user.password:
-        return JSONResponse(content={"error": "Password mismatch"}, status_code=404)
-    return JSONResponse(content = {"username": user_model.username, "password": user_model.password})
+        return False
+    return True
 
-@app.post("/login")
-def login(user: User, db: Session = Depends(get_db)):
-    response =  check_credentials(user, db)
-    if response.status_code == 200:
-        return response
-    else:
-        raise HTTPException(status_code=response.status_code, detail="Invalid credentials")
+############################
+# Auth Handler Functions
+############################
 
+def token_response(token: str, username: str):
+    return {
+        "access_token": token,
+        "username": username
+    }
 
+# function used for signing the JWT string
+def signJWT(user_id: str) -> Dict[str, str]:
+    payload = {
+        "user_id": user_id,
+        "expires": time.time() + 600
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
+    return token_response(token, user_id)
 
+# function used for decoding the JWT string
+def decodeJWT(token: str) -> dict:
+    try:
+        decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return decoded_token if decoded_token["expires"] >= time.time() else None
+    except:
+        return {}
+    
+# function used for verifying the JWT string
+def verify_jwt(jwtoken: str) -> bool:
+        isTokenValid: bool = False
+
+        try:
+            payload = decodeJWT(jwtoken)
+        except:
+            payload = None
+        if payload:
+            isTokenValid = True
+        return isTokenValid

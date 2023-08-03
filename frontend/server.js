@@ -34,13 +34,7 @@ app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
 
-
-
-
-
-
-
-
-
-
-
+function checkNotAuthenticated(req, res, next) {
+  console.log(localStorage.getItem('access_token'));
+  next()
+}
