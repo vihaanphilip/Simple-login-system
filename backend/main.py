@@ -46,6 +46,9 @@ class User(BaseModel):
     username: str = Field(min_length=1)
     password: str = Field(min_length=1, max_length=100)
 
+class Token(BaseModel):
+    access_token: str
+
 @app.get("/users")
 def read_api(db: Session = Depends(get_db)):
     return db.query(models.User).all()
@@ -71,8 +74,8 @@ def login(user: User, db: Session = Depends(get_db)):
 
 # Post verify
 @app.post("/verify")
-def login(jwtoken: str):
-    if verify_jwt(jwtoken):
+def login(jwtoken: Token):
+    if verify_jwt(jwtoken.access_token):
         return {"message": "Valid"}
     else:
         return {"message": "Invalid"}

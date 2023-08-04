@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // console.log(localStorage.getItem('access_token'));
                 // console.log(localStorage.getItem('username'));
+                authToken();
 
             })  
             .catch(error => {
@@ -48,4 +49,25 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+function authToken() {
+    const access_token = localStorage.getItem('access_token');
+    console.log(access_token);
+    fetch(baseUrl + 'verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            access_token: access_token
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        data.message === 'Valid' ? console.log('Token is valid') : console.log('Token is invalid');
+    })
+    .catch(error => {
+        console.log(error);
+    });
+}
 
