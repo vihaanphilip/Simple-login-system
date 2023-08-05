@@ -46,3 +46,7 @@ Users can navigate to the sign-up page via the "Register" button on the login pa
 **Tokens:**
 
 Tokens (JWT) are used in this system to authenticate a user's login. Each token lasts for 1 minute. This is done so that users do not have to log in every time they refresh the page.
+
+**Login Tracking**
+
+Additionally, this app tracks and logs each user's login activities. Every time a user logs in, the system records the login event and stores it in a separate database called logins.db. The logins.db database keeps a history of all successful login attempts, along with the associated user information and timestamps. This feature provides valuable insights into user activity and login patterns.
