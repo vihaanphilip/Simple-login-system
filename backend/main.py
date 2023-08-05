@@ -80,8 +80,6 @@ def login(jwtoken: Token):
     else:
         return {"message": "Invalid"}
 
-
-
 def check_credentials(user: User, db: Session = Depends(get_db)):
     user_model = db.query(models.User).filter(models.User.username == user.username).first()
     if user_model is None:

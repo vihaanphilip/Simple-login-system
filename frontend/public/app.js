@@ -4,6 +4,10 @@ function isLoginPage() {
   return window.location.pathname === '/login';
 }
 
+function isSignUpPage() {
+  return window.location.pathname === '/signup';
+}
+
 function isSuccessPage() {
   return window.location.pathname === '/success';
 }
@@ -19,6 +23,12 @@ function redirectToLogin() {
 
 document.addEventListener("DOMContentLoaded", function() {
   // Call the function to check the token and display the username on the success page
+
+  if(isSignUpPage()){
+    document.getElementById('back_button').addEventListener('click', function() {
+      window.location.href = '/login';
+    });
+  }
   
   if (isSuccessPage()) {
     checkAuthTokenAndDisplayUsername();
@@ -50,7 +60,13 @@ document.addEventListener("DOMContentLoaded", function() {
           password: inputPassword
         })
       })
-      .then(response => response.json())
+      .then(response => {
+
+        if (!response.ok) {
+          throw new Error('Login failed.');
+        }
+        return response.json()
+      })
       .then(async data => {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('username', data.username);
@@ -60,8 +76,15 @@ document.addEventListener("DOMContentLoaded", function() {
       })  
       .catch(error => {
         console.error('Error:', error);
+        var errorMessage = document.getElementById("error-message");
+        errorMessage.style.display = "block";
       });
     });
+
+    document.getElementById('register_button').addEventListener('click', function() {
+      window.location.href = '/signup';
+    });
+
   }
 });
 

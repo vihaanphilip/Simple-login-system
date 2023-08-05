@@ -18,6 +18,12 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Serve signup
+app.get('/signup', (req, res) => {
+  // console.log('Redirecting to /login')
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
 // Serve success
 app.get('/success', (req, res) => {
   // console.log('Redirecting to /login')
