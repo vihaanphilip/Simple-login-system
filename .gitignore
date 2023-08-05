@@ -314,3 +314,5 @@ package-lock.json
 
 # Ignore node_modules in nested directories
 **/node_modules/
+
+users.db
