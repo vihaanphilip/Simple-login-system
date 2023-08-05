@@ -315,5 +315,9 @@ package-lock.json
 # Ignore node_modules in nested directories
 **/node_modules/
 
+# Ignore log files
 users.db
 logins.db
+
+# Ignore log files
+__pycache__/
