@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import models
-from database import engine, SessionLocal
+from database import engine_1, SessionLocal_1, engine_2, SessionLocal_2
 from sqlalchemy.orm import Session
 
 #jwt
@@ -32,11 +32,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-models.Base.metadata.create_all(bind=engine) #create the database
+models.Base_1.metadata.create_all(bind=engine_1) #create the users database
+models.Base_2.metadata.create_all(bind=engine_2) #create the logins database
 
-def get_db():
+def get_users_db():
     try:
-        db = SessionLocal()
+        db = SessionLocal_1()
+        yield db
+    finally:
+        db.close()
+
+def get_logins_db():
+    try:
+        db = SessionLocal_2()
         yield db
     finally:
         db.close()
@@ -48,12 +56,39 @@ class User(BaseModel):
 class Token(BaseModel):
     access_token: str
 
+class Login(BaseModel):
+    username: str
+
+###
+# Handle logins database
+####
+
+@app.get("/logins")
+def read_api(db: Session = Depends(get_logins_db)):
+    return db.query(models.Login).all()
+
+@app.post("/logins")
+def create_login(login: Login, db: Session = Depends(get_logins_db)):
+    login_model = models.Login()
+    login_model.username = login.username
+    login_model.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    db.add(login_model)
+    db.commit()
+
+    return {"message": "Login recorded"}
+
+
+###
+# Handle users database
+####
+
 @app.get("/users")
-def read_api(db: Session = Depends(get_db)):
+def read_api(db: Session = Depends(get_users_db)):
     return db.query(models.User).all()
 
 @app.post("/users")
-def create_user(user: User, db: Session = Depends(get_db)):
+def create_user(user: User, db: Session = Depends(get_users_db)):
     user_model = models.User()
     user_model.username = user.username
     user_model.password = user.password
@@ -74,7 +109,7 @@ def create_user(user: User, db: Session = Depends(get_db)):
     return signJWT(user_model.username)
 
 @app.delete("/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(user_id: int, db: Session = Depends(get_users_db)):
     # counter = 0
 
     # for x in BOOKS:
@@ -97,7 +132,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 # Post login
 @app.post("/login")
-def login(user: User, db: Session = Depends(get_db)):
+def login(user: User, db: Session = Depends(get_users_db)):
     if check_credentials(user, db):
         return signJWT(user.username)
     else:
@@ -111,7 +146,7 @@ def login(jwtoken: Token):
     else:
         return {"message": "Invalid"}
 
-def check_credentials(user: User, db: Session = Depends(get_db)):
+def check_credentials(user: User, db: Session = Depends(get_users_db)):
     user_model = db.query(models.User).filter(models.User.username == user.username).first()
     if user_model is None:
         return False

@@ -316,3 +316,4 @@ package-lock.json
 **/node_modules/
 
 users.db
+logins.db

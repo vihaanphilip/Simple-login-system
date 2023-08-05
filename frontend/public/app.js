@@ -139,6 +139,29 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+function recordLogin(username) {
+  fetch(baseUrl + 'logins', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: username
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to record login.');
+    }
+    return response.json()
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+
+
 function authToken() {
   const access_token = localStorage.getItem('access_token');
   return fetch(baseUrl + 'verify', {
@@ -182,24 +205,25 @@ async function checkAuthTokenAndDisplayUsername() {
   }
 }
 
-  async function checkAuthenticated() {
-    try {
-      const isValid = await authToken();
-      console.log(isValid); // true or false depending on token validity
-  
-      if (!isValid) {
-        // Token is not valid, redirect to login
-        return;
-      }
-  
-      // If the token is valid, redirect to the success page
-      window.location.href = '/success';
-    } catch (error) {
-      console.error(error);
-      // If there's an error, redirect to login
-      redirectToLogin();
+async function checkAuthenticated() {
+  try {
+    const isValid = await authToken();
+    console.log(isValid); // true or false depending on token validity
+
+    if (!isValid) {
+      // Token is not valid, redirect to login
+      return;
     }
+
+    // If the token is valid, redirect to the success page and record the login
+    recordLogin(localStorage.getItem('username'));
+    window.location.href = '/success';
+  } catch (error) {
+    console.error(error);
+    // If there's an error, redirect to login
+    redirectToLogin();
   }
+}
 
 async function checkNotAuthenticated() {
   try {
@@ -212,7 +236,8 @@ async function checkNotAuthenticated() {
       return;
     }
 
-    // If the token is valid, redirect to the success page
+    // If the token is valid, redirect to the success page and record the login
+    recordLogin(localStorage.getItem('username'));
     window.location.href = '/success';
   } catch (error) {
     console.error(error);
