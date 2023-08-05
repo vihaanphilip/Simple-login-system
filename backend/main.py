@@ -59,10 +59,42 @@ def create_user(user: User, db: Session = Depends(get_db)):
     user_model.username = user.username
     user_model.password = user.password
 
+    if user_model.username == "" or user_model.password == "":
+        raise HTTPException(
+            status_code=400, detail="Username or password cannot be empty"
+        )
+
+    if db.query(models.User).filter(models.User.username == user_model.username).first():
+        raise HTTPException(
+            status_code=400, detail="Username already exists"
+        )
+
     db.add(user_model)
     db.commit()
 
-    return user
+    return signJWT(user_model.username)
+
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    # counter = 0
+
+    # for x in BOOKS:
+    #     counter += 1
+    #     if x.id == book_id:
+    #         del BOOKS[counter-1]
+    #         return {"message": "Deleted book"}
+
+    user_model = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if user_model is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"ID {user_id} not found"
+        )
+    
+    db.query(models.User).filter(models.User.id == user_id).delete()
+
+    db.commit()
 
 # Post login
 @app.post("/login")

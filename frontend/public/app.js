@@ -25,8 +25,53 @@ document.addEventListener("DOMContentLoaded", function() {
   // Call the function to check the token and display the username on the success page
 
   if(isSignUpPage()){
+
+    if (localStorage.getItem('access_token')) {
+      checkAuthenticated();
+    }
+
     document.getElementById('back_button').addEventListener('click', function() {
       window.location.href = '/login';
+    });
+
+    document.getElementById('signup_button').addEventListener('click', function() {
+      // attempts to post to server
+      const inputUsername = document.getElementById('input_username').value;
+      const inputPassword = document.getElementById('input_password').value;
+
+      fetch(baseUrl + 'users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: inputUsername,
+          password: inputPassword
+        })
+      })
+      .then(response => {
+
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            throw new Error(errorData.detail);
+          });
+        }
+        return response.json()
+      })
+      .then(async data => {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('username', data.username);
+
+        // Call the function to check the token and redirect accordingly
+        await checkNotAuthenticated();
+      })  
+      .catch(error => {
+        console.error('Error:', error);
+        var errorMessage = document.getElementById("error-message");
+        errorMessage.textContent = error.message; // Set the error message to the error detail received from the backend
+        errorMessage.style.display = "block";
+      });
+
     });
   }
   
@@ -41,7 +86,12 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   if (isLoginPage()) {
-    checkAuthenticated();
+
+    if (localStorage.getItem('access_token')) {
+      checkAuthenticated();
+    }
+
+    
 
     document.getElementById('login_button').addEventListener('click', function() {
       const inputUsername = document.getElementById('input_username').value;
@@ -79,6 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var errorMessage = document.getElementById("error-message");
         errorMessage.style.display = "block";
       });
+
     });
 
     document.getElementById('register_button').addEventListener('click', function() {
