@@ -46,5 +46,3 @@ Users can navigate to the sign-up page via the "Register" button on the login pa
 **Tokens:**
 
 Tokens (JWT) are used in this system to authenticate a user's login. Each token lasts for 1 minute. This is done so that users do not have to log in every time they refresh the page.
-
-Feel free to convert this text into a Markdown format and use it for your `README.md` file.
